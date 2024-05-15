@@ -61,7 +61,7 @@ abstract class BaseEndpoint
         }
 
         if ($response->getStatusCode() == 401) {
-            throw new DhlParcelException("Authentication failed", 0,  $response);
+            throw new DhlParcelException("Authentication failed", 0, $response);
         }
 
         $body = $response->getBody()->getContents();
