@@ -54,8 +54,13 @@ class DhlParcelException extends Exception
     {
         $object = static::parseResponseBody($response);
 
+        $errorDetails = '';
+        foreach ($object->details as $key => $value) {
+            $errorDetails .= $key . ': ' . $value[0] . "\n";
+        }
+
         return new static(
-            'Error executing API call: '.$object->message,
+            'Error executing API call: '.$object->message. "\n" . $errorDetails,
             $response->getStatusCode(),
             $response,
             $previous
