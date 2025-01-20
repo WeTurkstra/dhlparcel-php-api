@@ -11,6 +11,7 @@ class DhlParcelException extends Exception
 {
     /** @var \GuzzleHttp\Psr7\Response */
     protected $response;
+    protected $details = [];
 
     /**
      * Create a new DhlParcelException instance.
@@ -20,11 +21,12 @@ class DhlParcelException extends Exception
      * @param  \GuzzleHttp\Psr7\Response|null  $response
      * @param  \Throwable|null  $previous
      */
-    public function __construct(string $message = '', int $code = 0, ResponseInterface $response = null, Throwable $previous = null)
+    public function __construct(string $message = '', int $code = 0, ResponseInterface $response = null, Throwable $previous = null, $details = [])
     {
         parent::__construct($message, $code, $previous);
 
         $this->response = $response;
+        $this->details = $details;
     }
 
     /**
@@ -54,11 +56,16 @@ class DhlParcelException extends Exception
     {
         $object = static::parseResponseBody($response);
 
+        foreach ($object->details as $key => $value) {
+            $details[$key] = $value;
+        }
+
         return new static(
             'Error executing API call: '.$object->message,
             $response->getStatusCode(),
             $response,
-            $previous
+            $previous,
+            $details
         );
     }
 
@@ -70,6 +77,11 @@ class DhlParcelException extends Exception
     public function getResponse(): ?ResponseInterface
     {
         return $this->response;
+    }
+
+    public function getDetails(): array
+    {
+        return $this->details;
     }
 
     /**
